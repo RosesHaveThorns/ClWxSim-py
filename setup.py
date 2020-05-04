@@ -6,5 +6,5 @@ setup(
     author='cowminer27',
     packages=['ClWxSim'],
     license='LICENSE.txt',
-    description='An awesome package that does something',
+    description='A very simplistic weather "simulator"',
 )
