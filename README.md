@@ -1,2 +1,2 @@
 # Climate Weather Sim
-A very simplisitc weather "simulator".
+A very simplistic weather "simulator".
