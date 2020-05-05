@@ -6,9 +6,10 @@ class World:
 
     Attributes:
         air_humidity (float array): Size defined by grid_size
-        air_vectors (float array): Array storing [x,y] vectors representing the wind velocity in each grid square, Size defined by grid_size
+        air_vectors (tuple array): Array storing (x,y) vectors representing the wind velocity in each grid square, Size defined by grid_size
         air_temp (float array): Size defined by grid_size
         air_pressure (float array): Array storing the air pressure at sea level in each grid square, measured in mbar, size defined by grid_size
+        old_air_pressure (float array): Array storing a copy of air_pressure as it was before the last tick
         air_precip (float array): Size defined by grid_size
         ground_temp (float array): Size defined by grid_size
         ground_height (float array): Size defined by grid_size
@@ -34,7 +35,7 @@ class World:
             atmos_height (float, optional): Height of the World's atmosphere assuming a uniform density, defaults to 8.5 km
         """
         # Setup Logger
-        self.logger = Logger()
+        self.logger = Logger(log_name="world")
 
         # Set attrs
         self.world_name = world_name
@@ -51,6 +52,7 @@ class World:
         self.air_vectors = np.full((grid_size, grid_size), (0,0))    # (x,y) wind velocity vectors
         self.air_temp = np.zeros((grid_size, grid_size))
         self.air_pressure = np.full((grid_size, grid_size), starting_pressure)
+        self.old_air_pressure = self.air_pressure
         self.air_precip = np.zeros((grid_size, grid_size))
 
         self.ground_temp = np.zeros((grid_size, grid_size))

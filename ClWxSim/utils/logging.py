@@ -6,8 +6,9 @@ class Logger:
 	currentLogPath = ""
 	maxSize = 512	# max size of log files before a new one is created, in MB
 
-	def __init__(self, maxSize=512):
-		self.currentLogPath = "{}.LOG".format(str(time.strftime('%Y%m%d-%H%M%S')))
+	def __init__(self, log_name="main", maxSize=512):
+		self.log_name = log_name
+		self.currentLogPath = "{}{}.LOG".format(self.log_name, str(time.strftime('%Y%m%d-%H%M%S')))
 		self.maxSize = maxSize
 
 	def convertBytesToMB(self, num):
@@ -22,7 +23,7 @@ class Logger:
 
 	def log(self, txt):
 		if self.fileSize(self.currentLogPath) > self.maxSize:
-			self.currentLogPath = "{str(time.strftime('%Y%m%d-%H%M%S'))}.LOG"
+			self.currentLogPath = "{}{}.LOG".format(self.log_name, str(time.strftime('%Y%m%d-%H%M%S')))
 
 		updateText = time.strftime("%Y-%m-%d %H:%M:%S") + " >>> " + txt + "\n"
 		print(updateText)

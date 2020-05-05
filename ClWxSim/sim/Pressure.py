@@ -8,16 +8,28 @@ class Pressure:
     diff_rate = 1
 
     def __init__(self):
-        self.logger = Logger()
+        self.logger = Logger(log_name="pressure")
 
-    def step(self, grid_size, air_pressure, old_air_pressure, air_vectors, dt):
+    def tick(self, world, dt):
+        grid_size = world.grid_size
+        air_pressure = world.air_pressure
+        old_air_pressure = world.old_air_pressure
+        air_vectors = world.air_vectors
 
         old_air_pressure, air_pressure = dUtils.swap(old_air_pressure, air_pressure)
         old_air_pressure, air_pressure = self.diffuse(grid_size, air_pressure, old_air_pressure, dt)
         old_air_pressure, air_pressure = dUtils.swap(old_air_pressure, air_pressure)
         old_air_pressure, air_pressure = self.advect(grid_size, air_pressure, old_air_pressure, air_vectors, dt)
 
+        world.grid_size = grid_size
+        world.air_pressure = air_pressure
+        world.old_air_pressure = old_air_pressure
+        world.air_vectors = air_vectors
+
+        return world
+
         self.logger.log("Pressure dt step simulated")
+        return world
 
     def diffuse(self, grid_size, air_pressure, old_air_pressure, dt):
         """Calculates the diffusion during time dt and returns the new air_pressure"""
