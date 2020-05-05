@@ -6,14 +6,14 @@ class World:
 
     Attributes:
         air_humidity (float array): Size defined by grid_size
-        air_vectors (float array): Size defined by grid_size
+        air_vectors (float array): Array storing [x,y] vectors representing the wind velocity in each grid square, Size defined by grid_size
         air_temp (float array): Size defined by grid_size
         air_pressure (float array): Array storing the air pressure at sea level in each grid square, measured in mbar, size defined by grid_size
         air_precip (float array): Size defined by grid_size
         ground_temp (float array): Size defined by grid_size
         ground_height (float array): Size defined by grid_size
         ground_water (float array): Size defined by grid_size
-        grid_size (tuple): Size of all world data arrays
+        grid_size (tuple): Height and Width of all 2D world data arrays
         grid_sq_size (int): Height and Width of each grid square, measured in km
         world_name (str): The name of the world
         atmos_height (float): Height of the World's atmosphere assuming a uniform density, measured in km
@@ -22,11 +22,11 @@ class World:
 
     # -- Functions --
 
-    def __init__(self, world_name, loc="", grid_size=(72,72), grid_sq_size=100, atmos_height=8.5, starting_pressure=1013.25):
+    def __init__(self, world_name, loc="", grid_size=72, grid_sq_size=100, atmos_height=8.5, starting_pressure=1013.25):
         """Creates a new World object
 
         Args:
-            grid_size (tuple, optional): Size of all world data arrays to be created, defaults to (72,72)
+            grid_size (int, optional): Height and Width of all 2D world data arrays to be created, defaults to 72
             world_name (str): The name to give the World
             loc (str, optional): Folder to store this World object's data, defaults to this script's directory ("")
             starting_pressure (float, optional): Initial air pressure (in mbar) for all grid squares, defaults to 1013.25 mbar
@@ -44,18 +44,18 @@ class World:
         self.grid_sq_size = grid_sq_size
         self.atmos_height = atmos_height
 
-        self.grid_sq_vol = atmos_height * (grid_sq_size ^ 2)
+        self.grid_sq_vol = atmos_height * (grid_sq_size ** 2)
 
         # Create world data arrays
-        self.air_humidity = np.zeros(grid_size)
-        self.air_vectors = np.zeros(grid_size)
-        self.air_temp = np.zeros(grid_size)
-        self.air_pressure = np.full(grid_size, starting_pressure)
-        self.air_precip = np.zeros(grid_size)
+        self.air_humidity = np.zeros((grid_size, grid_size))
+        self.air_vectors = np.full((grid_size, grid_size), (0,0))    # (x,y) wind velocity vectors
+        self.air_temp = np.zeros((grid_size, grid_size))
+        self.air_pressure = np.full((grid_size, grid_size), starting_pressure)
+        self.air_precip = np.zeros((grid_size, grid_size))
 
-        self.ground_temp = np.zeros(grid_size)
-        self.ground_height = np.zeros(grid_size)
-        self.ground_water = np.zeros(grid_size)
+        self.ground_temp = np.zeros((grid_size, grid_size))
+        self.ground_height = np.zeros((grid_size, grid_size))
+        self.ground_water = np.zeros((grid_size, grid_size))
 
         self.logger.log("{world_name} instantiated".format(world_name))
 
