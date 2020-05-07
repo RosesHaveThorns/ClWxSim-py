@@ -24,13 +24,13 @@ class Logger:
 		return 0
 
 	def log(self, txt):
-		if self.fileSize(self.logLoc) > self.maxSize:
+		if self.fileSize(self.log_loc) > self.maxSize:
 			self.currentLogName = "{}{}.LOG".format(self.log_ID, str(time.strftime('%Y%m%d-%H%M%S')))
 			self.log_loc = os.path.join(os.path.dirname(__file__), self.currentLogName)
 
 		updateText = time.strftime("%Y-%m-%d %H:%M:%S") + " >>> " + txt + "\n"
 		print(updateText)
 
-		f_Log = open(self.logLoc, 'a+')
+		f_Log = open(self.log_loc, 'a+')
 		f_Log.write(updateText)
 		f_Log.close()

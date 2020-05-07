@@ -55,14 +55,14 @@ class World:
         # self.grid_sq_vol = atmos_height * (grid_sq_size ** 2)
 
         # Create world data arrays
-        self.air_vel_u = np.zeros((grid_size, grid_size))    # x wind velocity map
-        self.air_vel_u_prev = np.zeros((grid_size, grid_size))
+        self.air_vel_u = np.zeros((self.grid_size, self.grid_size))    # x wind velocity map
+        self.air_vel_u_prev = np.zeros((self.grid_size, self.grid_size))
 
-        self.air_vel_v = np.zeros((grid_size, grid_size))    # y wind velocity map
-        self.air_vel_v_prev = np.zeros((grid_size, grid_size))
+        self.air_vel_v = np.zeros((self.grid_size, self.grid_size))    # y wind velocity map
+        self.air_vel_v_prev = np.zeros((self.grid_size, self.grid_size))
 
-        self.air_pressure = np.full((grid_size, grid_size), starting_pressure)  # pressure map
-        self.air_pressure_prev = np.full((grid_size, grid_size), starting_pressure)
+        self.air_pressure = np.full((self.grid_size, self.grid_size), starting_pressure)  # pressure map
+        self.air_pressure_prev = np.full((self.grid_size, self.grid_size), starting_pressure)
 
         # self.air_humidity = np.zeros((grid_size, grid_size))
         #
@@ -77,11 +77,11 @@ class World:
         # self.ground_water = np.zeros((grid_size, grid_size))
 
         # Setup Logger
-        self.logger = Logger(log_name="world-{}".format(self.world_name))
+        self.logger = Logger(log_ID="world-{}".format(self.world_name))
 
         self.logger.log("{} instantiated".format(self.world_name))
 
-    def clear_data():
+    def clear_data(self):
         """clear all weather data"""
 
         self.air_vel_u[0:self.grid_size, 0:self.grid_size] = 0.0

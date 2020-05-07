@@ -19,7 +19,7 @@ class Controller:
         """
 
         self.world = world
-        self.logger = Logger(log_name="sim_controller")
+        self.logger = Logger(log_ID="sim_controller")
 
 
     def tick(self):
