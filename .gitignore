@@ -1,3 +1,7 @@
+# ClWxSim data
+*.LOG
+*.cws
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

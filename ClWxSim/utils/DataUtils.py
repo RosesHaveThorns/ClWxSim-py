@@ -1,14 +1,22 @@
-from ClWxSim.utils.logging import Logger
+import numpy as np
 
 class DataUtils:
     """A collection of utility functions for handling data and variables"""
 
-    def __init__(self):
-        self.logger = Logger()
+    @staticmethod
+    def swap(world):
+        temp = np.zeros((len(world.air_pressure), len(world.air_pressure)))
 
-    def swap(self, arg1, arg2):
-        tmp = arg1
-        arg1 = arg2
-        arg2 = tmp
+        for i in range(len(world.air_pressure)):
+            for j in range(len(world.air_pressure)):
+                temp[i][j] = world.old_air_pressure[i][j]
 
-        return arg1, arg2
+        for i in range(len(world.air_pressure)):
+            for j in range(len(world.air_pressure)):
+                world.old_air_pressure[i][j] = world.air_pressure[i][j]
+
+        for i in range(len(world.air_pressure)):
+            for j in range(len(world.air_pressure)):
+                world.air_pressure[i][j] = temp[i][j]
+
+        return world
