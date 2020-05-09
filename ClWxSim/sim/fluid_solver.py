@@ -109,12 +109,13 @@ def advect(N, b, d, d0, u, v, dt):
                 y = N + 0.5
             j0 = int(y)
             j1 = j0 + 1
+
             s1 = x - i0
             s0 = 1 - s1
             t1 = y - j0
             t0 = 1 - t1
-            d[i, j] = (s0 * (t0 * d0[i0, j0] + t1 * d0[i0, j1]) + s1 *
-                       (t0 * d0[i1, j0] + t1 * d0[i1, j1]))
+
+            d[i, j] = (s0 * (t0 * d0[i0, j0] + t1 * d0[i0, j1]) + s1 * (t0 * d0[i1, j0] + t1 * d0[i1, j1]))
     set_bnd(N, b, d)
 
 

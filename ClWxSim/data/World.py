@@ -29,14 +29,13 @@ class World:
 
     # -- Functions --
 
-    def __init__(self, world_name, data_loc="", wld_grid_size=72, grid_sq_size=100, atmos_height=8.5, starting_pressure=1013.25):
+    def __init__(self, world_name, data_loc="", wld_grid_size=72, grid_sq_size=100, atmos_height=8.5, starting_pressure=1013.):
         """Creates a new World object
 
         Args:
             wld_grid_size (int, optional): Height and Width excluding boundary cells of all 2D world data arrays to be created, defaults to 72
             world_name (str): The name to give the World
             loc (str, optional): Folder to store this World object's data, defaults to this script's directory ("")
-            starting_pressure (float, optional): Initial air pressure (in mbar) for all grid squares, defaults to 1013.25 mbar
             grid_sq_size (int, optional): Height and Width of each grid square (in km), defaults to 100 km
             atmos_height (float, optional): Height of the World's atmosphere assuming a uniform density, defaults to 8.5 km
         """
@@ -92,6 +91,39 @@ class World:
 
         self.air_pressure[0:self.grid_size, 0:self.grid_size] = self.starting_pressure
         self.air_pressure_prev[0:self.grid_size, 0:self.grid_size] = self.starting_pressure
+
+    def calcPressureGrad(self, pressure):
+        tempP = np.zeros((self.grid_size, self.grid_size))
+
+        # Get an array of only high pressure areas (ie more than 1 atm)
+        tempP[0:self.grid_size, 0:self.grid_size] = pressure[0:self.grid_size, 0:self.grid_size]
+        for i in range(self.grid_size):
+            for j in range(self.grid_size):
+                if tempP[i,j] <= self.starting_pressure:
+                    tempP[i,j] = self.starting_pressure
+
+        # Get gradient of high pressure areas
+        high_p_grad = np.gradient(tempP)
+        high_p_grad_u = -high_p_grad[0]
+        high_p_grad_v = -high_p_grad[1]
+
+        # Get an array of only low pressure areas (ie less than 1 atm)
+        tempP[0:self.grid_size, 0:self.grid_size] = pressure[0:self.grid_size, 0:self.grid_size]
+        for i in range(self.grid_size):
+            for j in range(self.grid_size):
+                if tempP[i,j] >= self.starting_pressure:
+                    tempP[i,j] = self.starting_pressure
+
+        # Get gradient of low pressure areas
+        low_p_grad = np.gradient(tempP)
+        low_p_grad_u = -low_p_grad[0]
+        low_p_grad_v = -low_p_grad[1]
+
+        # Merge low and high pressure area gradients
+        final_grad_u = low_p_grad_u + high_p_grad_u
+        final_grad_v = low_p_grad_v + high_p_grad_v
+
+        return final_grad_u, final_grad_v
 
     # def load(self):
     #     try:

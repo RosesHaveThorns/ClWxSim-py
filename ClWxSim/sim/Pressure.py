@@ -14,7 +14,7 @@ def tick(N, x, x0, u, v, diff, dt):
         diff (float > 0): Rate of diffusion
         dt (float): Length of time of each tick
     """
-    solver.add_source(N, x, x0, dt)
+
     x0, x = x, x0  # swap
     solver.diffuse(N, 0, x, x0, diff, dt)
     x0, x = x, x0  # swap

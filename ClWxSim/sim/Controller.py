@@ -30,12 +30,12 @@ class Controller:
             p.tick(self.world.wld_grid_size,  self.world.air_pressure,  self.world.air_pressure_prev, self.world.air_vel_u, self.world.air_vel_v,  self.world.diff,  self.world.dt)
 
             try:
-                self.world.air_vel_u.round(decimals=5)
-                self.world.air_vel_v.round(decimals=5)
-                self.world.air_vel_u_prev.round(decimals=5)
-                self.world.air_vel_v_prev.round(decimals=5)
-                self.world.air_pressure.round(decimals=5)
-                self.world.air_pressure_prev.round(decimals=5)
+                self.world.air_vel_u = self.world.air_vel_u.round(decimals=5)
+                self.world.air_vel_v = self.world.air_vel_v.round(decimals=5)
+                self.world.air_vel_u_prev = self.world.air_vel_u_prev.round(decimals=5)
+                self.world.air_vel_v_prev = self.world.air_vel_v_prev.round(decimals=5)
+                self.world.air_pressure = self.world.air_pressure.round(decimals=5)
+                self.world.air_pressure_prev = self.world.air_pressure_prev.round(decimals=5)
             except Exception as e:
                 self.logger.log("ERROR while rounding arrays during tick {}: [{}]".format(self.tickNum, e))
         else:

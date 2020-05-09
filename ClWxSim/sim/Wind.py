@@ -15,8 +15,6 @@ def tick(N, u, v, u0, v0, visc, dt):
         dt (float): Length of time of each tick
     """
 
-    solver.add_source(N, u, u0, dt)
-    solver.add_source(N, v, v0, dt)
     u0, u = u, u0  # swap
     solver.diffuse(N, 1, u, u0, visc, dt)
     v0, v = v, v0  # swap
