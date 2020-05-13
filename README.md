@@ -1,5 +1,5 @@
 # Climate Weather Sim
-A very simplistic weather "simulator".
+A very simplistic weather simulator.
 
 ## Current Features
 - Wind Simulation
