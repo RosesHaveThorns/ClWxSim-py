@@ -63,6 +63,9 @@ class World:
         self.air_pressure = np.full((self.grid_size, self.grid_size), starting_pressure)  # pressure map
         self.air_pressure_prev = np.full((self.grid_size, self.grid_size), starting_pressure)
 
+        self.air_pressure_grad_u_prev = np.zeros((self.grid_size, self.grid_size))  # previous pressure gradient (x and y)
+        self.air_pressure_grad_v_prev = np.zeros((self.grid_size, self.grid_size))
+
         # self.air_humidity = np.zeros((grid_size, grid_size))
         #
         # self.air_temp = np.zeros((grid_size, grid_size))

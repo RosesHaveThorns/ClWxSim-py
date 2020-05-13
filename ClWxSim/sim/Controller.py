@@ -26,16 +26,20 @@ class Controller:
         if self.running:
             self.tickNum += 1
 
-            w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt)
+            pressure_grad_u, pressure_grad_v = self.world.calcPressureGrad(self.world.air_pressure)
+
+            w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev)
             p.tick(self.world.wld_grid_size,  self.world.air_pressure,  self.world.air_pressure_prev, self.world.air_vel_u, self.world.air_vel_v,  self.world.diff,  self.world.dt)
 
+            self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev = pressure_grad_u, pressure_grad_v
+
             try:
-                self.world.air_vel_u = self.world.air_vel_u.round(decimals=5)
-                self.world.air_vel_v = self.world.air_vel_v.round(decimals=5)
-                self.world.air_vel_u_prev = self.world.air_vel_u_prev.round(decimals=5)
-                self.world.air_vel_v_prev = self.world.air_vel_v_prev.round(decimals=5)
-                self.world.air_pressure = self.world.air_pressure.round(decimals=5)
-                self.world.air_pressure_prev = self.world.air_pressure_prev.round(decimals=5)
+                self.world.air_vel_u = self.world.air_vel_u.round(decimals=10)
+                self.world.air_vel_v = self.world.air_vel_v.round(decimals=10)
+                self.world.air_vel_u_prev = self.world.air_vel_u_prev.round(decimals=10)
+                self.world.air_vel_v_prev = self.world.air_vel_v_prev.round(decimals=10)
+                self.world.air_pressure = self.world.air_pressure.round(decimals=10)
+                self.world.air_pressure_prev = self.world.air_pressure_prev.round(decimals=10)
             except Exception as e:
                 self.logger.log("ERROR while rounding arrays during tick {}: [{}]".format(self.tickNum, e))
         else:

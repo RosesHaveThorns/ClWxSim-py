@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -20,7 +18,7 @@ cbar_arr = []
 def startHeatmap(axar, array1, array2, array3, world):
     global im0, im1, im2, im3, im4
     im0 = axar[0,0].imshow(array1, cmap='hot')
-    axar[0,0].set_title('Pressure Map')
+    axar[0,0].set_title('Pressure (mbar) Map')
     plt.colorbar(im0, ax=axarr[0,0])
 
     full_grad_u, full_grad_v = world.calcPressureGrad(array1)
@@ -34,11 +32,11 @@ def startHeatmap(axar, array1, array2, array3, world):
     plt.colorbar(im4, ax=axarr[0,2])
 
     im1 = axar[1,0].imshow(array2, cmap='hot')
-    axarr[1,0].set_title('Vel U Map')
+    axarr[1,0].set_title('Wind [u] Map')
     plt.colorbar(im1, ax=axarr[1,0])
 
     im2 = axar[1,1].imshow(array3, cmap='hot')
-    axar[1,1].set_title('Vel V Map')
+    axar[1,1].set_title('Wind [v] Map')
     plt.colorbar(im2, ax=axarr[1,1])
 
 
@@ -102,8 +100,8 @@ if __name__ == "__main__":
     added_v_grid[7,12] = 15.
 
     solver.add_source(wld.wld_grid_size, wld.air_pressure, added_p_grid, wld.dt)
-    solver.add_source(wld.wld_grid_size, wld.air_vel_u, added_u_grid, wld.dt)
-    solver.add_source(wld.wld_grid_size, wld.air_vel_v, added_v_grid, wld.dt)
+    # solver.add_source(wld.wld_grid_size, wld.air_vel_u, added_u_grid, wld.dt)
+    # solver.add_source(wld.wld_grid_size, wld.air_vel_v, added_v_grid, wld.dt)
 
     # Start ui
     startHeatmap(axarr, wld.air_pressure, wld.air_vel_u, wld.air_vel_v, wld)
