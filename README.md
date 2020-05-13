@@ -2,7 +2,8 @@
 A very simplistic weather "simulator".
 
 ## Current Features
-- Wind and Pressure Simulation
+- Wind Simulation
+- Pressure Advection and Diffusion
 
 ## Future Features
 - Coriolis Effect
