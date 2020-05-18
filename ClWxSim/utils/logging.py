@@ -9,9 +9,10 @@ class Logger:
 
 	def __init__(self, log_ID="main", maxSize=512):
 		self.log_ID = log_ID
-		self.currentLogName = "{}{}.LOG".format(self.log_ID, str(time.strftime('%Y%m%d-%H%M%S')))
+		self.currentLogName = "LOGS\\{}{}.LOG".format(self.log_ID, str(time.strftime('%Y%m%d-%H%M%S')))
 		self.log_loc = os.path.join(os.path.dirname(__file__), self.currentLogName)
 		self.maxSize = maxSize
+		print(self.log_loc)
 
 	def convertBytesToMB(self, num):
 		mb = num/1000000
@@ -25,7 +26,7 @@ class Logger:
 
 	def log(self, txt):
 		if self.fileSize(self.log_loc) > self.maxSize:
-			self.currentLogName = "{}{}.LOG".format(self.log_ID, str(time.strftime('%Y%m%d-%H%M%S')))
+			self.currentLogName = "LOGS\\{}{}.LOG".format(self.log_ID, str(time.strftime('%Y%m%d-%H%M%S')))
 			self.log_loc = os.path.join(os.path.dirname(__file__), self.currentLogName)
 
 		updateText = time.strftime("%Y-%m-%d %H:%M:%S") + " >>> " + txt + "\n"

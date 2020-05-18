@@ -20,16 +20,20 @@ class World:
         world_name (str): The name of the world
         atmos_height (float): Height of the World's atmosphere assuming a uniform density, measured in km
         grid_sq_vol (float): An esimation of the volume of air a grid square holds, measured in km^3
+        angular_vel (float): Angular velocity of planet, measured in rad/s
     """
 
     # -- Attributes --
     dt = .5         # Length of time for each tick
+
     diff = 0.00001  # Pressure diffusion rate
     visc = 0.00001  # Wind diffusion rate
 
+    angular_vel = .000072 # Angular velocity of planet, measured in rad/s
+
     # -- Functions --
 
-    def __init__(self, world_name, data_loc="", wld_grid_size=72, grid_sq_size=100, atmos_height=8.5, starting_pressure=1013.):
+    def __init__(self, world_name, data_loc="", wld_grid_size=72, grid_sq_size=100, atmos_height=8.5, starting_pressure=1013., angular_vel = .000072):
         """Creates a new World object
 
         Args:
@@ -38,6 +42,7 @@ class World:
             loc (str, optional): Folder to store this World object's data, defaults to this script's directory ("")
             grid_sq_size (int, optional): Height and Width of each grid square (in km), defaults to 100 km
             atmos_height (float, optional): Height of the World's atmosphere assuming a uniform density, defaults to 8.5 km
+            angular_vel (float, optional): Angular velocity of planet (in rad/s), defaults to earth (ie .000072)
         """
 
         # Set attrs
@@ -48,6 +53,7 @@ class World:
 
         self.wld_grid_size = wld_grid_size
         self.grid_size = wld_grid_size + 2
+        self.angular_vel = angular_vel
         # self.grid_sq_size = grid_sq_size
         # self.atmos_height = atmos_height
 
@@ -86,16 +92,21 @@ class World:
     def clear_data(self):
         """clear all weather data"""
 
-        self.air_vel_u[0:self.grid_size, 0:self.grid_size] = 0.0
-        self.air_vel_v[0:self.grid_size, 0:self.grid_size] = 0.0
+        self.air_vel_u = np.zeros((self.grid_size, self.grid_size))    # x wind velocity map
+        self.air_vel_u_prev = np.zeros((self.grid_size, self.grid_size))
 
-        self.air_vel_u_prev[0:self.grid_size, 0:self.grid_size] = 0.0
-        self.air_vel_v_prev[0:self.grid_size, 0:self.grid_size] = 0.0
+        self.air_vel_v = np.zeros((self.grid_size, self.grid_size))    # y wind velocity map
+        self.air_vel_v_prev = np.zeros((self.grid_size, self.grid_size))
 
-        self.air_pressure[0:self.grid_size, 0:self.grid_size] = self.starting_pressure
-        self.air_pressure_prev[0:self.grid_size, 0:self.grid_size] = self.starting_pressure
+        self.air_pressure = np.full((self.grid_size, self.grid_size), self.starting_pressure)  # pressure map
+        self.air_pressure_prev = np.full((self.grid_size, self.grid_size), self.starting_pressure)
+
+        self.air_pressure_grad_u_prev = np.zeros((self.grid_size, self.grid_size))  # previous pressure gradient (x and y)
+        self.air_pressure_grad_v_prev = np.zeros((self.grid_size, self.grid_size))
 
     def calcPressureGrad(self, pressure):
+        """returns the u and v pressure gradient maps using 1013 as the center"""
+
         tempP = np.zeros((self.grid_size, self.grid_size))
 
         # Get an array of only high pressure areas (ie more than 1 atm)

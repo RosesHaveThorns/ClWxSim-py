@@ -1,5 +1,6 @@
-from ClWxSim.utils.logging import Logger
 import numpy as np
+
+from ClWxSim.utils.logging import Logger
 
 import ClWxSim.sim.pressure as p
 import ClWxSim.sim.wind as w
@@ -28,10 +29,10 @@ class Controller:
 
             pressure_grad_u, pressure_grad_v = self.world.calcPressureGrad(self.world.air_pressure)
 
-            w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev)
+            w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev, self.world.angular_vel)
             p.tick(self.world.wld_grid_size,  self.world.air_pressure,  self.world.air_pressure_prev, self.world.air_vel_u, self.world.air_vel_v,  self.world.diff,  self.world.dt)
 
-            self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev = pressure_grad_u, pressure_grad_v
+            self.world.air_pressure_grad_u_prev[0:self.world.grid_size+1, 0:self.world.grid_size+1], self.world.air_pressure_grad_v_prev[0:self.world.grid_size+1, 0:self.world.grid_size+1] = pressure_grad_u[0:self.world.grid_size+1, 0:self.world.grid_size+1], pressure_grad_v[0:self.world.grid_size+1, 0:self.world.grid_size+1]
 
             try:
                 self.world.air_vel_u = self.world.air_vel_u.round(decimals=10)

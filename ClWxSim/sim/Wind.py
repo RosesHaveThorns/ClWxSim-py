@@ -2,10 +2,14 @@
 
 import ClWxSim.sim.fluid_solver as solver
 
-PGF_modifier = 0.1
+import numpy as np
+import math
 
-def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev):
-    """Calculates the advection and diffusion of the pressure wind velocity arrays over a single tick
+PGF_modifier = 1
+coriolis_modifier = 100
+
+def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev, w):
+    """Calculates the advection, diffusion, coriolis effect and pressure gradient force affects on the wind velocity arrays over a single tick
 
     Args:
         N (int): Size of array excluding boundary cells
@@ -18,11 +22,20 @@ def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_
         x_grad_u (array of size N+2): The x component pressure gradient array
         x_grad_v (array of size N+2): The y component pressure gradient array
     """
-    u[1:N+1, 1:N+1] -= x_grad_u_prev[1:N+1, 1:N+1] * PGF_modifier * dt
-    v[1:N+1, 1:N+1] -= x_grad_v_prev[1:N+1, 1:N+1] * PGF_modifier * dt
+    #  Pressure Gradient Force: Remove old gradient, apply new gradient
+    u[0:N+2, 0:N+2] -= x_grad_u_prev[0:N+2, 0:N+2] * PGF_modifier * dt * u[0:N+2, 0:N+2]
+    v[0:N+2, 0:N+2] -= x_grad_v_prev[0:N+2, 0:N+2] * PGF_modifier * dt * v[0:N+2, 0:N+2]
 
-    u[1:N+1, 1:N+1] += x_grad_u[1:N+1, 1:N+1] * PGF_modifier * dt
-    v[1:N+1, 1:N+1] += x_grad_v[1:N+1, 1:N+1] * PGF_modifier * dt
+    u[0:N+2, 0:N+2] += x_grad_u[0:N+2, 0:N+2] * PGF_modifier * dt * u[0:N+2, 0:N+2]
+    v[0:N+2, 0:N+2] += x_grad_v[0:N+2, 0:N+2] * PGF_modifier * dt * v[0:N+2, 0:N+2]
+
+    # Coriolis Effect: Caused by planet's rotation              CURRRENTLY CAUSES WIND U TO EXPLODE!!!
+    for i in range(N+2):
+        for j in range(N+2):
+            u[i, j] += 2 * u[i, j] * w * np.sin(calcLat(N, j)) * dt * coriolis_modifier
+            #print(str(i) + " " + str(j) + " | " + str(round(math.sin(calcLat(N, j)), 1)) + " | " + str(u[i, j].round(decimals=10)) + " || " + str(2 * u[i, j] * w * np.sin(calcLat(N, j)) * dt))
+
+    # Advection and Diffusion: As per the paper "Real-Time Fluid Dynamics for Games" by Jos Stam
 
     u0, u = u, u0  # swap
     v0, v = v, v0  # swap
@@ -40,9 +53,7 @@ def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_
 
     solver.project(N, u, v, u0, v0)
 
-
-    # TAKE AWAY OLD GRADIENT, ADD NEW GRADIENT, CALC ADVECTION AND DIFFUSION, representation
-    # that way im not adding more stuff all the time, it wont explode
-
-    # I think it will anyway? the pressure will just spread out super quick
-    # Maybe remove the grad when advecting the pressure so pressure doesnt affect itself, but keep it in for humitity etc
+def calcLat(N, y):
+    """returns the latitude (in rad) of a given y axis value, assumes map's latittude is linear"""
+    lat = ((N - y) / N * 2 * math.pi) - math.pi
+    return lat

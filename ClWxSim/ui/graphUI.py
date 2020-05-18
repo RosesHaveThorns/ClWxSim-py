@@ -1,7 +1,8 @@
 import numpy as np
 
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
+import tkinter
 
 import keyboard
 
@@ -92,16 +93,14 @@ if __name__ == "__main__":
     added_p_grid[50,70+1] = 15.
 
     added_u_grid = np.zeros((wld.grid_size, wld.grid_size))
-    added_u_grid[20,40] = 15.
-    added_u_grid[7,12] = -15.
-    added_u_grid[70,80] = 15.
+    added_u_grid[1:wld.grid_size-1, 1:wld.grid_size-1] = .0001
 
     added_v_grid = np.zeros((wld.grid_size, wld.grid_size))
-    added_v_grid[7,12] = 15.
+    added_v_grid[1:wld.grid_size-1, 1:wld.grid_size-1] = .0001
 
     solver.add_source(wld.wld_grid_size, wld.air_pressure, added_p_grid, wld.dt)
-    # solver.add_source(wld.wld_grid_size, wld.air_vel_u, added_u_grid, wld.dt)
-    # solver.add_source(wld.wld_grid_size, wld.air_vel_v, added_v_grid, wld.dt)
+    solver.add_source(wld.wld_grid_size, wld.air_vel_u, added_u_grid, wld.dt)
+    solver.add_source(wld.wld_grid_size, wld.air_vel_v, added_v_grid, wld.dt)
 
     # Start ui
     startHeatmap(axarr, wld.air_pressure, wld.air_vel_u, wld.air_vel_v, wld)
