@@ -5,10 +5,10 @@ import ClWxSim.sim.fluid_solver as solver
 import numpy as np
 import math
 
-PGF_modifier = 1
+PGF_modifier = 0.01
 coriolis_modifier = 100
 
-def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev, w):
+def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev, w, apply_pgf=True, remove_pgf=True):
     """Calculates the advection, diffusion, coriolis effect and pressure gradient force affects on the wind velocity arrays over a single tick
 
     Args:
@@ -21,19 +21,24 @@ def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_
         dt (float): Length of time of each tick
         x_grad_u (array of size N+2): The x component pressure gradient array
         x_grad_v (array of size N+2): The y component pressure gradient array
+        x_grad_v_prev (array of size N+2): The previous value of x_grad_u
+        x_grad_u_prev (array of size N+2): The previous value of x_grad_v
+        w (float): Planet's angular velocity
+        apply_pgf (bool, optional): If false, will not add new Pressure Gradient Force (only false until pressure has smoothed)
+        remove_pgf (bool, optional) If false, will not remove old Pressure Gradient Force (only false for first tick PGF is applied)
     """
     #  Pressure Gradient Force: Remove old gradient, apply new gradient
-    u[0:N+2, 0:N+2] -= x_grad_u_prev[0:N+2, 0:N+2] * PGF_modifier * dt * u[0:N+2, 0:N+2]
-    v[0:N+2, 0:N+2] -= x_grad_v_prev[0:N+2, 0:N+2] * PGF_modifier * dt * v[0:N+2, 0:N+2]
+    if remove_pgf:
+        u[0:N+2, 0:N+2] -= x_grad_u_prev[0:N+2, 0:N+2] * PGF_modifier * dt
+        v[0:N+2, 0:N+2] -= x_grad_v_prev[0:N+2, 0:N+2] * PGF_modifier * dt
+    if apply_pgf:
+        u[0:N+2, 0:N+2] += x_grad_u[0:N+2, 0:N+2] * PGF_modifier * dt
+        v[0:N+2, 0:N+2] += x_grad_v[0:N+2, 0:N+2] * PGF_modifier * dt
 
-    u[0:N+2, 0:N+2] += x_grad_u[0:N+2, 0:N+2] * PGF_modifier * dt * u[0:N+2, 0:N+2]
-    v[0:N+2, 0:N+2] += x_grad_v[0:N+2, 0:N+2] * PGF_modifier * dt * v[0:N+2, 0:N+2]
-
-    # Coriolis Effect: Caused by planet's rotation              CURRRENTLY CAUSES WIND U TO EXPLODE!!!
+    # Coriolis Effect: Caused by planet's rotation
     for i in range(N+2):
         for j in range(N+2):
-            u[i, j] += 2 * u[i, j] * w * np.sin(calcLat(N, j)) * dt * coriolis_modifier
-            #print(str(i) + " " + str(j) + " | " + str(round(math.sin(calcLat(N, j)), 1)) + " | " + str(u[i, j].round(decimals=10)) + " || " + str(2 * u[i, j] * w * np.sin(calcLat(N, j)) * dt))
+            v[i, j] += 2 * w * np.sin(calcLat(N, i)) * dt * coriolis_modifier# * u[i, j]
 
     # Advection and Diffusion: As per the paper "Real-Time Fluid Dynamics for Games" by Jos Stam
 

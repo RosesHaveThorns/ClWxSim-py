@@ -5,6 +5,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2TkAgg
 import matplotlib.pyplot as plt
+from matplotlib.colors import DivergingNorm
 
 import numpy as np
 
@@ -15,7 +16,7 @@ LARGE_FONT= ("Verdana", 12)
 
 class SimDataPage(tk.Frame):
 
-    quiver_scale = 0.0001
+    quiver_scale = 500.
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -57,11 +58,11 @@ class SimDataPage(tk.Frame):
         X, Y = np.mgrid[0:self.wld_ref.wld_grid_size + 2, 0:self.wld_ref.wld_grid_size + 2]
         X[0:self.wld_ref.wld_grid_size + 2] = X[0:self.wld_ref.wld_grid_size + 2] + 0.5
         Y[0:self.wld_ref.wld_grid_size + 2] = Y[0:self.wld_ref.wld_grid_size + 2] + 0.5
-        self.graph_contour = self.axar.contour(X, Y, self.wld_ref.air_pressure, 3, colors='black')
+        self.graph_contour = self.axar.contour(X, Y, self.wld_ref.air_pressure, 8, colors='black', alpha=0.5)
         plt.clabel(self.graph_contour, inline=True, fontsize=8)
 
         # Background Img
-        self.graph_img = self.axar.imshow(np.transpose(self.wld_ref.air_pressure), cmap='coolwarm', alpha=0.5, origin='lower')
+        self.graph_img = self.axar.imshow(np.transpose(self.wld_ref.air_pressure), cmap='coolwarm', alpha=0.5, origin='lower', norm=DivergingNorm(self.wld_ref.starting_pressure))
         plt.colorbar(self.graph_img, ax=self.axar)
         self.graph_img.set_clim([self.wld_ref.air_pressure.min(), self.wld_ref.air_pressure.max()])
 
@@ -80,7 +81,7 @@ class SimDataPage(tk.Frame):
                 if data_v[i, j] == 0:
                     data_v[i, j] = 0.0000000001 * self.quiver_scale
 
-        self.graph_arrows = self.axar.quiver(X, Y, data_u, data_v)
+        self.graph_arrows = self.axar.quiver(X, Y, data_u, data_v, scale=5, scale_units='inches', alpha=0.5)
 
 
 # Commands
@@ -92,7 +93,7 @@ class SimDataPage(tk.Frame):
         X, Y = np.mgrid[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
         X[0:self.wld_ref.grid_size] = X[0:self.wld_ref.grid_size] + 0.5
         Y[0:self.wld_ref.grid_size] = Y[0:self.wld_ref.grid_size] + 0.5
-        self.graph_contour = self.axar.contour(X, Y, self.wld_ref.air_pressure, 3, colors='black')
+        self.graph_contour = self.axar.contour(X, Y, self.wld_ref.air_pressure, 8, colors='black', alpha=0.5)
 
         # Update img
         self.graph_img.set_array(np.transpose(self.wld_ref.air_pressure))

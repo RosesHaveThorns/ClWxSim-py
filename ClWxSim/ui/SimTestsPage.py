@@ -112,10 +112,12 @@ class SimTestsPage(tk.Frame):
 
 # Commands
     def view_cell_data(self):
-        x = int(self.cell_data_fields[0].get())
-        y = int(self.cell_data_fields[1].get())
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!FINISH THIS!!!!!!!!!!!!!!!!!!!!!!
+        x = int(self.cell_data_fields[1].get())
+        y = int(self.cell_data_fields[0].get())
 
+        self.p_data_label.config(text=self.wld_ref.air_pressure[x, y])
+        self.u_data_label.config(text=self.wld_ref.air_vel_u[x, y])
+        self.v_data_label.config(text=self.wld_ref.air_vel_v[x, y])
 
     def add_pressure(self):
         # Get entry vals
