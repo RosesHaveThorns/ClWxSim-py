@@ -52,15 +52,15 @@ class SimTestsPage(tk.Frame):
         add_source_btns_frame = tk.Frame(self)
 
                 # Add Pressure Button
-        add_p_btn = ttk.Button(add_source_btns_frame, text="Add Pressure", command=self.add_pressure)
+        add_p_btn = ttk.Button(add_source_btns_frame, text="Add Pressure", command=self.add_pressure_cmd)
         add_p_btn.grid(row=0, column=0)
 
                 # Add Wind U Vector Button
-        add_wu_btn = ttk.Button(add_source_btns_frame, text="Add Wind U Vector", command=self.add_wind_u)
+        add_wu_btn = ttk.Button(add_source_btns_frame, text="Add Wind U Vector", command=self.add_wind_u_cmd)
         add_wu_btn.grid(row=0, column=1)
 
                 # Add Wind V Vector Button
-        add_wv_btn = ttk.Button(add_source_btns_frame, text="Add Wind V Vector", command=self.add_wind_v)
+        add_wv_btn = ttk.Button(add_source_btns_frame, text="Add Wind V Vector", command=self.add_wind_v_cmd)
         add_wv_btn.grid(row=0, column=2)
 
         add_source_btns_frame.pack(padx=5, pady=10)
@@ -91,7 +91,7 @@ class SimTestsPage(tk.Frame):
             # Add Cell Data View Frame
         cell_data_frame = tk.Frame(self)
 
-                # Set cell data button
+                # Show cell data
         self.p_data_label = tk.Label(cell_data_frame, text="Pressure: Null")
         self.p_data_label.grid(row=0, column=0)
 
@@ -101,16 +101,68 @@ class SimTestsPage(tk.Frame):
         self.v_data_label = tk.Label(cell_data_frame, text="Wind V: Null")
         self.v_data_label.grid(row=0, column=2)
 
+                # Create get cell data button
         get_data_btn = ttk.Button(cell_data_frame, text="View Cell Data", command=self.view_cell_data)
         get_data_btn.grid(row=0, column=3)
 
         cell_data_frame.pack(padx=5, pady=10)
 
+            # Add Presets Frame
+        presets_frame = tk.Frame(self)
+
+                # Heading
+        self.p_data_label = tk.Label(presets_frame, text="Presets:")
+        self.p_data_label.grid(row=0, column=1)
+
+                # Preset Buttons
+        preset_A_btn = ttk.Button(presets_frame, text="Add Preset A", command=self.preset_A)
+        preset_A_btn.grid(row=1, column=0)
+
+        preset_B_btn = ttk.Button(presets_frame, text="Add Preset B", command=self.preset_B)
+        preset_B_btn.grid(row=1, column=1)
+
+        preset_C_btn = ttk.Button(presets_frame, text="Add Preset C", command=self.preset_C)
+        preset_C_btn.grid(row=1, column=2)
+
+        presets_frame.pack(padx=5, pady=10)
+
     def onFirstShow(self):
         # Create world reference
         self.wld_ref = self.cont.frames[SimControlPage].wld
 
+    def add_to_wld(self, arr, val, cx, cy, r):
+        # Calculate source array
+        src = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
+
+        x = np.arange(0, self.wld_ref.grid_size)
+        y = np.arange(0, self.wld_ref.grid_size)
+
+        mask = (x[np.newaxis,:] - cx) ** 2 + (y[:,np.newaxis] - cy) ** 2 < r ** 2
+        src[mask] = val
+
+        # Add source array to pressure
+        solver.add_source(self.wld_ref.wld_grid_size, arr, src, self.wld_ref.dt)
+
 # Commands
+    def preset_A(self):
+        # Add high p center in northern hemisphere, low p center in southern hemisphere
+        self.add_to_wld(self.wld_ref.air_pressure, 5., 50, 25, 5)
+        self.add_to_wld(self.wld_ref.air_pressure, -5., 50, 75, 5)
+
+    def preset_B(self):
+        # Add a high and a low p center to each hemisphere
+        self.add_to_wld(self.wld_ref.air_pressure, 5., 25, 25, 5)
+        self.add_to_wld(self.wld_ref.air_pressure, -5., 25, 75, 5)
+        self.add_to_wld(self.wld_ref.air_pressure, -5., 75, 25, 5)
+        self.add_to_wld(self.wld_ref.air_pressure, 5., 75, 75, 5)
+
+    def preset_C(self):
+        # Add a u and v wind hotspot to each hemisphere
+        self.add_to_wld(self.wld_ref.air_vel_u, 0.002, 25, 25, 5)
+        self.add_to_wld(self.wld_ref.air_vel_u, 0.002, 25, 75, 5)
+        self.add_to_wld(self.wld_ref.air_vel_v, 0.002, 75, 25, 5)
+        self.add_to_wld(self.wld_ref.air_vel_v, 0.002, 75, 75, 5)
+
     def view_cell_data(self):
         x = int(self.cell_data_fields[1].get())
         y = int(self.cell_data_fields[0].get())
@@ -119,59 +171,29 @@ class SimTestsPage(tk.Frame):
         self.u_data_label.config(text=self.wld_ref.air_vel_u[x, y])
         self.v_data_label.config(text=self.wld_ref.air_vel_v[x, y])
 
-    def add_pressure(self):
+    def add_pressure_cmd(self):
         # Get entry vals
         val = float(self.source_fields[0].get())
         cx = int(self.source_fields[1].get())
         cy = int(self.source_fields[2].get())
         r = int(self.source_fields[3].get())
 
-        # Calculate source array
-        arr = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
+        self.add_to_wld(self.wld_ref.air_pressure, val, cx, cy, r)
 
-        x = np.arange(0, self.wld_ref.grid_size)
-        y = np.arange(0, self.wld_ref.grid_size)
-
-        mask = (x[np.newaxis,:] - cx) ** 2 + (y[:,np.newaxis] - cy) ** 2 < r ** 2
-        arr[mask] = val
-
-        # Add source array to pressure
-        solver.add_source(self.wld_ref.wld_grid_size, self.wld_ref.air_pressure, arr, self.wld_ref.dt)
-
-    def add_wind_u(self):
+    def add_wind_u_cmd(self):
         # Get entry vals
         val = float(self.source_fields[0].get())
         cx = int(self.source_fields[1].get())
         cy = int(self.source_fields[2].get())
         r = int(self.source_fields[3].get())
 
-        # Calculate source array
-        arr = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
+        self.add_to_wld(self.wld_ref.air_vel_u, val, cx, cy, r)
 
-        x = np.arange(0, self.wld_ref.grid_size)
-        y = np.arange(0, self.wld_ref.grid_size)
-
-        mask = (x[np.newaxis,:] - cx) ** 2 + (y[:,np.newaxis] - cy) ** 2 < r ** 2
-        arr[mask] = val
-
-        # Add source array to wind u
-        solver.add_source(self.wld_ref.wld_grid_size, self.wld_ref.air_vel_u, arr, self.wld_ref.dt)
-
-    def add_wind_v(self):
+    def add_wind_v_cmd(self):
         # Get entry vals
         val = float(self.source_fields[0].get())
         cx = int(self.source_fields[1].get())
         cy = int(self.source_fields[2].get())
         r = int(self.source_fields[3].get())
 
-        # Calculate source array
-        arr = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
-
-        x = np.arange(0, self.wld_ref.grid_size)
-        y = np.arange(0, self.wld_ref.grid_size)
-
-        mask = (x[np.newaxis,:] - cx) ** 2 + (y[:,np.newaxis] - cy) ** 2 < r ** 2
-        arr[mask] = val
-
-        # Add source array to wind v
-        solver.add_source(self.wld_ref.wld_grid_size, self.wld_ref.air_vel_v, arr, self.wld_ref.dt)
+        self.add_to_wld(self.wld_ref.air_vel_v, val, cx, cy, r)

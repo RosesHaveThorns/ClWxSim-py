@@ -147,13 +147,11 @@ def coriolis(N, u, v, dt, w, mod):
 
             u[i, j] += u_add
             v[i, j] += v_add
-
-            #print(str(i) + ", " + str(j) + " | U: " + str(u_add) + " | V: " + str(v_add))
-
+            
     set_bnd(N, 1, u)
     set_bnd(N, 2, v)
 
 def calc_lat(N, y):
-    """returns the latitude (in deg) of a given y axis value, assumes map's latittude is linear"""
-    lat = ((N - y) / N * 180) - 90
+    """returns the latitude (in deg) of a given y axis value, assumes map's latittude is linear and y=0 is the south pole"""
+    lat = -(((N - y) / N * 180) - 90)
     return lat

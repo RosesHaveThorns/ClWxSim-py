@@ -107,14 +107,10 @@ class World:
     def calcPressureGrad(self, pressure):
         """returns the u and v pressure gradient maps using 1013 as the center"""
 
-        tempP = np.zeros((self.grid_size, self.grid_size))
-
-        tempP[0:self.grid_size, 0:self.grid_size] = pressure[0:self.grid_size, 0:self.grid_size]
-
         # Get gradient of high pressure areas
-        p_grad = np.gradient(tempP)
-        p_grad_u = -p_grad[0]
-        p_grad_v = -p_grad[1]
+        p_grad = np.gradient(pressure)
+        p_grad_u = -p_grad[1]
+        p_grad_v = -p_grad[0]
 
         return p_grad_u, p_grad_v
 

@@ -60,7 +60,7 @@ class SimDataPage(tk.Frame):
         X, Y = np.mgrid[0:self.wld_ref.wld_grid_size + 2, 0:self.wld_ref.wld_grid_size + 2]
         X[0:self.wld_ref.wld_grid_size + 2] = X[0:self.wld_ref.wld_grid_size + 2] + 0.5
         Y[0:self.wld_ref.wld_grid_size + 2] = Y[0:self.wld_ref.wld_grid_size + 2] + 0.5
-        self.graph_contour = self.axar.contour(X, Y, np.transpose(self.wld_ref.air_pressure), 8, colors='black', alpha=0.5)
+        self.graph_contour = self.axar.contour(X, Y, np.transpose(self.wld_ref.air_pressure), 16, colors='black', alpha=0.5)
         plt.clabel(self.graph_contour, inline=True, fontsize=8)
 
         # Background Img
@@ -95,7 +95,7 @@ class SimDataPage(tk.Frame):
         X, Y = np.mgrid[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
         X[0:self.wld_ref.grid_size] = X[0:self.wld_ref.grid_size] + 0.5
         Y[0:self.wld_ref.grid_size] = Y[0:self.wld_ref.grid_size] + 0.5
-        self.graph_contour = self.axar.contour(X, Y, np.transpose(self.wld_ref.air_pressure), 8, colors='black', alpha=0.5)
+        self.graph_contour = self.axar.contour(X, Y, np.transpose(self.wld_ref.air_pressure), 16, colors='black', alpha=0.5)
 
         # Update img
         self.graph_img.set_array(self.wld_ref.air_pressure)
