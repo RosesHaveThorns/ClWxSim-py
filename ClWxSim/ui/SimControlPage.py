@@ -13,6 +13,8 @@ class SimControlPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.cont = controller
 
+        self.dataPage_ref = None
+
         # Create world and sim vars
         self.wld = World(world_name="default-world", wld_grid_size=100)
         self.sim = None
@@ -75,8 +77,32 @@ class SimControlPage(tk.Frame):
 
         ctrl_sim_frame.pack(padx=5, pady=10)
 
+            # Frame for img saving controls
+        save_imgs_frame = tk.Frame(self)
+
+                # Save ticks tickbox
+        self.store_imgs = tk.IntVar()
+        store_imgs_chkbox = ttk.Checkbutton(save_imgs_frame, text="Store ticks:", variable=self.store_imgs)
+        store_imgs_chkbox.grid(row=0, column=0)
+
+                # Text boxes
+        self.img_setting_field_names = "Save an iamge every X ticks:", "File Location (relative to scripts):"
+        self.img_setting_fields = []
+
+        for i in range(len(self.img_setting_field_names)):
+            lab = tk.Label(save_imgs_frame, width=25, text=self.img_setting_field_names[i], anchor='w')
+            ent = tk.Entry(save_imgs_frame)
+            lab.grid(column=0, row=i+1, sticky='w')
+            ent.grid(column=1, row=i+1)
+            self.img_setting_fields.append(ent)
+
+        self.img_setting_fields[0].insert(0, "1")
+        self.img_setting_fields[1].insert(0, "image_out/")
+
+        save_imgs_frame.pack(padx=5, pady=10)
+
         # Update info ribbon
-        self.cont.info_ribbon_wld.config(text="Current Tick: {}".format(self.wld.world_name))
+        self.cont.info_ribbon_wld.config(text="Current World: {}".format(self.wld.world_name))
 
     def sim_tick_loop(self):
         if self.sim != None:
@@ -84,16 +110,29 @@ class SimControlPage(tk.Frame):
             # Run tick calculations
                 try:
                     self.sim.tick()
+
+                    # Store img
+                    try:
+                        store_on_tick = int(self.img_setting_fields[0].get())
+                        if self.store_imgs and self.sim.tickNum % store_on_tick == 0:
+                            self.save_fig_img()
+                    except Exception as e:
+                        print("Error saveing image, was the given time between ticks an integer and the image address correct? [{}]".format(e))
+
                     # Update info ribbon
-                    self.cont.info_ribbon_tick.config(text="Current World: {}".format(self.sim.tickNum))
+                    self.cont.info_ribbon_tick.config(text="Current Tick: {}".format(self.sim.tickNum))
 
                 except Exception as e:
-                    logger.log("Error during tick {}: [{}]".format(self.sim.tickNum, e))
+                    print("Error during tick {}: [{}]".format(self.sim.tickNum, e))
                     self.sim.running = False
 
                 # check running again, possible error above
                 if self.sim.running:
                     self.cont.after(10, self.sim_tick_loop)
+
+    def save_fig_img(self):
+        self.dataPage_ref.refresh()
+        self.cont.fig_ref.savefig(self.img_setting_fields[1].get() + "{}_{}.png".format(self.wld.world_name, self.sim.tickNum))
 
 # Commands
     def clear_sim(self):
@@ -140,21 +179,36 @@ class SimControlPage(tk.Frame):
             self.clear_world_btn.config(state='normal')
 
     def start_sim(self):
-        # Update info ribbon
-        self.cont.info_ribbon_status.config(text="Sim Running", fg="green")
+        if self.sim != None:
+            # Update info ribbon
+            self.cont.info_ribbon_status.config(text="Sim Running", fg="green")
 
-        # Lock/Unlock buttons
-        self.clear_sim_btn.config(state='disabled')
+            # Lock/Unlock buttons
+            self.clear_sim_btn.config(state='disabled')
 
-        self.start_sim_btn.config(state='disabled')
-        self.clear_world_btn.config(state='disabled')
-        self.pau_res_sim_btn.config(state='normal')
+            self.start_sim_btn.config(state='disabled')
+            self.clear_world_btn.config(state='disabled')
+            self.pau_res_sim_btn.config(state='normal')
 
-        self.pau_res_sim_btn.config(text="Pause Sim")
+            self.pau_res_sim_btn.config(text="Pause Sim")
 
-        # Start repeating sim tick loop after 10ms
-        self.sim.running = True
-        self.cont.after(10, self.sim_tick_loop)
+            # Start repeating sim tick loop after 10ms
+            self.sim.running = True
+
+            if self.store_imgs:
+                loop_every = 50
+            else:
+                loop_every = 20
+            self.cont.after(loop_every, self.sim_tick_loop)
+
+    def next_tick(self):
+        if self.sim != None:
+            self.cont.info_ribbon_status.config(text="Sim Running", fg="green")
+            self.sim.running = True
+            self.sim.tick()
+            self.cont.info_ribbon_tick.config(text="Current Tick: {}".format(self.sim.tickNum))
+            self.sim.running = False
+            self.cont.info_ribbon_status.config(text="Sim Paused", fg="yellow")
 
     def pause_resume_sim(self):
         # Check if sim.running, if true pause, if false resume. Update button text
@@ -182,7 +236,12 @@ class SimControlPage(tk.Frame):
 
                 # Start running sim
                 self.sim.running = True
-                self.cont.after(10, self.sim_tick_loop)
+                
+                if self.store_imgs:
+                    loop_every = 50
+                else:
+                    loop_every = 20
+                self.cont.after(loop_every, self.sim_tick_loop)
 
     def clear_wld(self):
         self.sim.tickNum = 0

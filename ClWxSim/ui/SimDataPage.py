@@ -42,6 +42,8 @@ class SimDataPage(tk.Frame):
         self.wld_ref = self.cont.frames[SimControlPage].wld
 
         self.createGraph()
+        plt.close(self.fig)
+        self.cont.fig_ref = self.fig
 
         canvas = FigureCanvasTkAgg(self.fig, self)
         canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
@@ -58,11 +60,11 @@ class SimDataPage(tk.Frame):
         X, Y = np.mgrid[0:self.wld_ref.wld_grid_size + 2, 0:self.wld_ref.wld_grid_size + 2]
         X[0:self.wld_ref.wld_grid_size + 2] = X[0:self.wld_ref.wld_grid_size + 2] + 0.5
         Y[0:self.wld_ref.wld_grid_size + 2] = Y[0:self.wld_ref.wld_grid_size + 2] + 0.5
-        self.graph_contour = self.axar.contour(X, Y, self.wld_ref.air_pressure, 8, colors='black', alpha=0.5)
+        self.graph_contour = self.axar.contour(X, Y, np.transpose(self.wld_ref.air_pressure), 8, colors='black', alpha=0.5)
         plt.clabel(self.graph_contour, inline=True, fontsize=8)
 
         # Background Img
-        self.graph_img = self.axar.imshow(np.transpose(self.wld_ref.air_pressure), cmap='coolwarm', alpha=0.5, origin='lower', norm=DivergingNorm(self.wld_ref.starting_pressure))
+        self.graph_img = self.axar.imshow(self.wld_ref.air_pressure, cmap='coolwarm', alpha=0.5, origin='lower', norm=DivergingNorm(self.wld_ref.starting_pressure))
         plt.colorbar(self.graph_img, ax=self.axar)
         self.graph_img.set_clim([self.wld_ref.air_pressure.min(), self.wld_ref.air_pressure.max()])
 
@@ -76,12 +78,12 @@ class SimDataPage(tk.Frame):
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000001 * self.quiver_scale
+                    data_u[i, j] = 0.0000000000000001 * self.quiver_scale
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000001 * self.quiver_scale
+                    data_v[i, j] = 0.0000000000000001 * self.quiver_scale
 
-        self.graph_arrows = self.axar.quiver(X, Y, data_u, data_v, scale=5, scale_units='inches', alpha=0.5)
+        self.graph_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), scale=5, scale_units='inches', alpha=0.5)
 
 
 # Commands
@@ -93,10 +95,10 @@ class SimDataPage(tk.Frame):
         X, Y = np.mgrid[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
         X[0:self.wld_ref.grid_size] = X[0:self.wld_ref.grid_size] + 0.5
         Y[0:self.wld_ref.grid_size] = Y[0:self.wld_ref.grid_size] + 0.5
-        self.graph_contour = self.axar.contour(X, Y, self.wld_ref.air_pressure, 8, colors='black', alpha=0.5)
+        self.graph_contour = self.axar.contour(X, Y, np.transpose(self.wld_ref.air_pressure), 8, colors='black', alpha=0.5)
 
         # Update img
-        self.graph_img.set_array(np.transpose(self.wld_ref.air_pressure))
+        self.graph_img.set_array(self.wld_ref.air_pressure)
         self.graph_img.set_clim([self.wld_ref.air_pressure.min(), self.wld_ref.air_pressure.max()])
 
         # Update quiver (remove zero vals and scale down)
@@ -109,9 +111,9 @@ class SimDataPage(tk.Frame):
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000001 * self.quiver_scale
+                    data_u[i, j] = 0.0000000000000001 * self.quiver_scale
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000001 * self.quiver_scale
+                    data_v[i, j] = 0.0000000000000001 * self.quiver_scale
 
-        self.graph_arrows.set_UVC(data_u, data_v)
+        self.graph_arrows.set_UVC(np.transpose(data_u), np.transpose(data_v))

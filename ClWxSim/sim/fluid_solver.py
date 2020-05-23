@@ -1,4 +1,6 @@
-"""Contains functions for calculating 2D fuid advection and diffusion"""
+"""Contains functions for calculating 2D weather effects, including advection, diffuse and the coriolis effect"""
+
+import math
 
 def add_source(N, x, s, dt):
     """Adds s to x, taking into account dt
@@ -134,3 +136,24 @@ def project(N, u, v, p, div):
     v[1:N + 1, 1:N + 1] -= 0.5 * (p[1:N + 1, 2:N + 2] - p[1:N + 1, 0:N]) / h
     set_bnd(N, 1, u)
     set_bnd(N, 2, v)
+
+def coriolis(N, u, v, dt, w, mod):
+    """calclates wind acceleration due to the coriolis effect"""
+
+    for i in range(N+1):
+        for j in range(N+1):
+            u_add = v[i, j] * 2 * w * math.sin(math.radians(calc_lat(N, i))) * dt * mod
+            v_add = -u[i, j] * 2 * w * math.sin(math.radians(calc_lat(N, i))) * dt * mod
+
+            u[i, j] += u_add
+            v[i, j] += v_add
+
+            #print(str(i) + ", " + str(j) + " | U: " + str(u_add) + " | V: " + str(v_add))
+
+    set_bnd(N, 1, u)
+    set_bnd(N, 2, v)
+
+def calc_lat(N, y):
+    """returns the latitude (in deg) of a given y axis value, assumes map's latittude is linear"""
+    lat = ((N - y) / N * 180) - 90
+    return lat

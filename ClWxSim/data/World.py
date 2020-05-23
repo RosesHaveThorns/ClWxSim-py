@@ -109,35 +109,14 @@ class World:
 
         tempP = np.zeros((self.grid_size, self.grid_size))
 
-        # Get an array of only high pressure areas (ie more than 1 atm)
         tempP[0:self.grid_size, 0:self.grid_size] = pressure[0:self.grid_size, 0:self.grid_size]
-        for i in range(self.grid_size):
-            for j in range(self.grid_size):
-                if tempP[i,j] <= self.starting_pressure:
-                    tempP[i,j] = self.starting_pressure
 
         # Get gradient of high pressure areas
-        high_p_grad = np.gradient(tempP)
-        high_p_grad_u = -high_p_grad[0]
-        high_p_grad_v = -high_p_grad[1]
+        p_grad = np.gradient(tempP)
+        p_grad_u = -p_grad[0]
+        p_grad_v = -p_grad[1]
 
-        # Get an array of only low pressure areas (ie less than 1 atm)
-        tempP[0:self.grid_size, 0:self.grid_size] = pressure[0:self.grid_size, 0:self.grid_size]
-        for i in range(self.grid_size):
-            for j in range(self.grid_size):
-                if tempP[i,j] >= self.starting_pressure:
-                    tempP[i,j] = self.starting_pressure
-
-        # Get gradient of low pressure areas
-        low_p_grad = np.gradient(tempP)
-        low_p_grad_u = -low_p_grad[0]
-        low_p_grad_v = -low_p_grad[1]
-
-        # Merge low and high pressure area gradients
-        final_grad_u = low_p_grad_u + high_p_grad_u
-        final_grad_v = low_p_grad_v + high_p_grad_v
-
-        return final_grad_u, final_grad_v
+        return p_grad_u, p_grad_v
 
     # def load(self):
     #     try:

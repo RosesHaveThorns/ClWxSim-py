@@ -20,6 +20,8 @@ class ClWxSimGUI(tk.Tk):
 
         self.logger = Logger(log_ID="GUI")
 
+        self.fig_ref = None
+
         # Main container
         main_container = tk.Frame(self)
         main_container.pack(fill=tk.BOTH, expand=True)
@@ -77,7 +79,10 @@ class ClWxSimGUI(tk.Tk):
 
                     # Sim dropdown
         simMenu = tk.Menu(menubar)
+        simMenu.add_command(label="Prepare Sim", command=self.frames[SimControlPage].setup_sim)
         simMenu.add_command(label="Start Sim", command=self.frames[SimControlPage].start_sim)
+        simMenu.add_command(label="Next Tick", command=self.frames[SimControlPage].next_tick)
+        simMenu.add_command(label="Pause/Resume Sim", command=self.frames[SimControlPage].pause_resume_sim)
 
                     # Add dropdowns to menu bar
         menubar.add_cascade(label="File", menu=fileMenu)
@@ -87,9 +92,10 @@ class ClWxSimGUI(tk.Tk):
         # Intercept close window
         self.protocol('WM_DELETE_WINDOW', self.onExit)
 
-        # Show first frame
+        # Prepare for and show first frame
         self.frames[SimTestsPage].onFirstShow()
         self.frames[SimDataPage].onFirstShow()
+        self.frames[SimControlPage].dataPage_ref = self.frames[SimDataPage]
         self.show_frame(SimDataPage)
 
     def show_frame(self, cont):
