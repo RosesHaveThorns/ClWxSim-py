@@ -114,7 +114,7 @@ class SimControlPage(tk.Frame):
                     # Store img
                     try:
                         store_on_tick = int(self.img_setting_fields[0].get())
-                        if self.store_imgs and self.sim.tickNum % store_on_tick == 0:
+                        if self.store_imgs.get() and self.sim.tickNum % store_on_tick == 0:
                             self.save_fig_img()
                     except Exception as e:
                         print("Error saveing image, was the given time between ticks an integer and the image address correct? [{}]".format(e))
@@ -236,7 +236,7 @@ class SimControlPage(tk.Frame):
 
                 # Start running sim
                 self.sim.running = True
-                
+
                 if self.store_imgs:
                     loop_every = 50
                 else:
