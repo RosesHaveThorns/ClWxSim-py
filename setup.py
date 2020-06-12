@@ -7,4 +7,7 @@ setup(
     packages=['ClWxSim'],
     license='LICENSE.txt',
     description='A very simplistic weather "simulator"',
+    install_requires=[
+    'Cython',
+    'numpy']
 )
