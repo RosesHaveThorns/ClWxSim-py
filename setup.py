@@ -9,5 +9,6 @@ setup(
     description='A very simplistic weather "simulator"',
     install_requires=[
     'Cython',
-    'numpy']
+    'numpy',
+    'matplotlib']
 )
