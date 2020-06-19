@@ -5,7 +5,7 @@ import ClWxSim.sim.fluid_solver as solver
 import numpy as np
 import math
 
-PGF_modifier = 0.001
+PGF_modifier = 0.01
 coriolis_modifier = 2000.
 
 def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev, w, apply_pgf=True, remove_pgf=True):
@@ -27,6 +27,17 @@ def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_
         apply_pgf (bool, optional): If false, will not add new Pressure Gradient Force (only false until pressure has smoothed)
         remove_pgf (bool, optional) If false, will not remove old Pressure Gradient Force (only false for first tick PGF is applied)
     """
+    #  Pressure Gradient Force: Remove old gradient
+
+    if remove_pgf:
+        u[0:N+2, 0:N+2] -= x_grad_u_prev[0:N+2, 0:N+2] * PGF_modifier * dt
+        v[0:N+2, 0:N+2] -= x_grad_v_prev[0:N+2, 0:N+2] * PGF_modifier * dt
+
+    #  Pressure Gradient Force: Apply new gradient
+
+    if apply_pgf:
+        u[0:N+2, 0:N+2] += x_grad_u[0:N+2, 0:N+2] * PGF_modifier * dt
+        v[0:N+2, 0:N+2] += x_grad_v[0:N+2, 0:N+2] * PGF_modifier * dt
 
     # Advection and Diffusion: As per the paper "Real-Time Fluid Dynamics for Games" by Jos Stam
 
@@ -45,18 +56,6 @@ def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_
     solver.advect(N, 2, v, v0, u0, v0, dt)
 
     solver.project(N, u, v, u0, v0)
-
-    #  Pressure Gradient Force: Remove old gradient
-
-    if remove_pgf:
-        u[1:N+1, 1:N+1] -= x_grad_u_prev[1:N+1, 1:N+1] * PGF_modifier * dt
-        v[1:N+1, 1:N+1] -= x_grad_v_prev[1:N+1, 1:N+1] * PGF_modifier * dt
-
-    #  Pressure Gradient Force: Apply new gradient
-
-    if apply_pgf:
-        u[1:N+1, 1:N+1] += x_grad_u[1:N+1, 1:N+1] * PGF_modifier * dt
-        v[1:N+1, 1:N+1] += x_grad_v[1:N+1, 1:N+1] * PGF_modifier * dt
 
     # Coriolis Effect: Caused by planet's rotation
 
