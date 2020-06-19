@@ -59,6 +59,10 @@ class World:
 
         # self.grid_sq_vol = atmos_height * (grid_sq_size ** 2)
 
+        # Create debuging data arrays (e.g. coriolis force map)
+        self.dbg_coriolis_u = np.zeros((self.grid_size, self.grid_size))
+        self.dbg_coriolis_v = np.zeros((self.grid_size, self.grid_size))
+
         # Create world data arrays
         self.air_vel_u = np.zeros((self.grid_size, self.grid_size))    # x wind velocity map
         self.air_vel_u_prev = np.zeros((self.grid_size, self.grid_size))

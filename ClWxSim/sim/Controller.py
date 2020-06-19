@@ -11,7 +11,7 @@ class Controller:
 
     running = False
     tickNum = 0
-    begin_pgf_tick = 100
+    begin_pgf_tick = 10
 
     def __init__(self, world):
         """Instatiaties a Controller object
@@ -33,11 +33,11 @@ class Controller:
             # Calculate Wind Effects
             # Only apply Pressure Gradient Force after pressure has settled, once we have reached begin_pgf_tick. Only remove old PGF after first PGF has been applied
             if self.tickNum > self.begin_pgf_tick:
-                w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev, self.world.angular_vel)
+                w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev, self.world.angular_vel, self.world)
             elif self.tickNum == self.begin_pgf_tick:
-                w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev, self.world.angular_vel, remove_pgf=False)
+                w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev, self.world.angular_vel, self.world, remove_pgf=False)
             else:
-                w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev, self.world.angular_vel, apply_pgf=False, remove_pgf=False)
+                w.tick(self.world.wld_grid_size, self.world.air_vel_u, self.world.air_vel_v, self.world.air_vel_u_prev, self.world.air_vel_v_prev, self.world.visc, self.world.dt, pressure_grad_u, pressure_grad_v, self.world.air_pressure_grad_u_prev, self.world.air_pressure_grad_v_prev, self.world.angular_vel, self.world, apply_pgf=False, remove_pgf=False)
 
             # Calculate Pressure Effects
             p.tick(self.world.wld_grid_size,  self.world.air_pressure,  self.world.air_pressure_prev, self.world.air_vel_u, self.world.air_vel_v,  self.world.diff,  self.world.dt)

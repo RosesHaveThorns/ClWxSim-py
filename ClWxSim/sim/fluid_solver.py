@@ -1,6 +1,7 @@
 """Contains functions for calculating 2D weather effects, including advection, diffuse and the coriolis effect"""
 
 import math
+import numpy as np
 
 def add_source(N, x, s, dt):
     """Adds s to x, taking into account dt
@@ -137,17 +138,22 @@ def project(N, u, v, p, div):
     set_bnd(N, 1, u)
     set_bnd(N, 2, v)
 
-def coriolis(N, u, v, dt, w, mod):
+def coriolis(N, u, v, dt, w, mod, wld):
     """calclates wind acceleration due to the coriolis effect"""
+    u_add = np.zeros((N+2, N+2))
+    v_add = np.zeros((N+2, N+2))
 
     for i in range(N+1):
         for j in range(N+1):
-            u_add = v[i, j] * 2 * w * math.sin(math.radians(calc_lat(N, i))) * dt * mod
-            v_add = -u[i, j] * 2 * w * math.sin(math.radians(calc_lat(N, i))) * dt * mod
+            u_add[i,j] = v[i, j] * 2 * w * math.sin(math.radians(calc_lat(N, i))) * mod
+            v_add[i,j] = -u[i, j] * 2 * w * math.sin(math.radians(calc_lat(N, i))) * mod
 
-            u[i, j] += u_add
-            v[i, j] += v_add
-            
+    wld.dbg_coriolis_u[0:N+2,0:N+2] = u_add[0:N+2,0:N+2]
+    wld.dbg_coriolis_v[0:N+2,0:N+2] = v_add[0:N+2,0:N+2]
+
+    add_source(N, u, u_add, dt)
+    add_source(N, v, v_add, dt)
+
     set_bnd(N, 1, u)
     set_bnd(N, 2, v)
 

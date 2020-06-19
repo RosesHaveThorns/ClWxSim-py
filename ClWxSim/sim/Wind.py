@@ -8,7 +8,7 @@ import math
 PGF_modifier = 0.01
 coriolis_modifier = 2000.
 
-def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev, w, apply_pgf=True, remove_pgf=True):
+def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev, w, wld_ref, apply_pgf=True, remove_pgf=True):
     """Calculates the advection, diffusion, coriolis effect and pressure gradient force affects on the wind velocity arrays over a single tick
 
     Args:
@@ -47,7 +47,7 @@ def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_
     solver.diffuse(N, 1, u, u0, visc, dt)
     solver.diffuse(N, 2, v, v0, visc, dt)
 
-    solver.project(N, u, v, u0, v0)
+    #solver.project(N, u, v, u0, v0)
 
     u0, u = u, u0  # swap
     v0, v = v, v0  # swap
@@ -55,8 +55,8 @@ def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_
     solver.advect(N, 1, u, u0, u0, v0, dt)
     solver.advect(N, 2, v, v0, u0, v0, dt)
 
-    solver.project(N, u, v, u0, v0)
+    #solver.project(N, u, v, u0, v0)
 
     # Coriolis Effect: Caused by planet's rotation
 
-    solver.coriolis(N, u, v, dt, w, coriolis_modifier)
+    solver.coriolis(N, u, v, dt, w, coriolis_modifier, wld_ref)
