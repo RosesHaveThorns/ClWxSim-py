@@ -18,6 +18,11 @@ A very simplistic weather simulator.
 - 2: extract the repo and run "python setup.py install"
 - 3: locate the package in the python directory and run "ClWxSim/ui/ClWxSim_Main.py" to run the simulator
 
+### Requirements
+- matplotlib
+- cython
+- numpy
+
 ### Possible Installation Issues
 #### "error: Microsoft Visual C++ 14.0 is required"
 Download the Visual Studio C++ build tools from https://visualstudio.microsoft.com/visual-cpp-build-tools/
