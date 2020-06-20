@@ -2,7 +2,7 @@
 
 import ClWxSim.sim.fluid_solver as solver
 
-wind_modifier = 1
+wind_modifier = 1.
 
 def tick(N, x, x0, u, v, diff, dt):
     """Calculates the advection and diffusion of the pressure array over a single tick

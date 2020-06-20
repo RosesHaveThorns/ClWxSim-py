@@ -16,8 +16,9 @@ LARGE_FONT= ("Verdana", 12)
 
 class SimDataPage(tk.Frame):
 
-    quiver_w_scale = 1000.
-    quiver_c_scale = 10000.
+    quiver_w_scale = 100.
+    quiver_c_scale = 100.
+    quiver_g_scale = 100.
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -39,14 +40,27 @@ class SimDataPage(tk.Frame):
         refresh_btn.pack()
 
                 # Show Coriolis Tickbox
+        cori_style = ttk.Style()
+        cori_style.configure("tur.TCheckbutton", foreground="turquoise")
+
         self.show_coriolis = tk.IntVar()
         show_coriolis_chkbox = ttk.Checkbutton(self, text="View Coriolis Effect", variable=self.show_coriolis)
+        show_coriolis_chkbox.configure(style="tur.TCheckbutton")
         show_coriolis_chkbox.pack()
 
                 # Show Wind Tickbox
         self.show_wind = tk.IntVar()
         show_wind_chkbox = ttk.Checkbutton(self, text="View Wind Speed", variable=self.show_wind)
         show_wind_chkbox.pack()
+
+                # Show PGF Tickbox
+        pgf_style = ttk.Style()
+        pgf_style.configure("red.TCheckbutton", foreground="red")
+
+        self.show_pgf = tk.IntVar()
+        show_pgf_chkbox = ttk.Checkbutton(self, text="View Pressure Gradient Force", variable=self.show_pgf)
+        show_pgf_chkbox.configure(style="red.TCheckbutton")
+        show_pgf_chkbox.pack()
 
     def onFirstShow(self):
         # Create graph widget
@@ -106,12 +120,30 @@ class SimDataPage(tk.Frame):
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_w_scale
+                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_c_scale
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_w_scale
+                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_c_scale
 
         self.graph_c_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), color="c", scale=5, scale_units='inches', alpha=0.5)
+
+        # PGF quiver (remove zero vals and scale down)
+        data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
+        data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
+
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_g_scale
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_g_scale
+
+        for i in range(self.wld_ref.grid_size):
+            for j in range(self.wld_ref.grid_size):
+                if data_u[i, j] == 0:
+                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_g_scale
+
+                if data_v[i, j] == 0:
+                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_g_scale
+
+        self.graph_g_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), color="r", scale=5, scale_units='inches', alpha=0.5)
+
 
 # Commands
     def refresh(self):
@@ -171,3 +203,25 @@ class SimDataPage(tk.Frame):
             self.graph_c_arrows.set_visible(False)
 
         self.graph_c_arrows.set_UVC(np.transpose(data_u), np.transpose(data_v))
+
+        # Update PGF quiver (remove zero vals and scale down)
+        data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
+        data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
+
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_c_scale
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_c_scale
+
+        for i in range(self.wld_ref.grid_size):
+            for j in range(self.wld_ref.grid_size):
+                if data_u[i, j] == 0:
+                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_g_scale
+
+                if data_v[i, j] == 0:
+                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_g_scale
+
+        if self.show_pgf.get():
+            self.graph_g_arrows.set_visible(True)
+        else:
+            self.graph_g_arrows.set_visible(False)
+
+        self.graph_g_arrows.set_UVC(np.transpose(data_u), np.transpose(data_v))
