@@ -5,8 +5,8 @@ import ClWxSim.sim.fluid_solver as solver
 import numpy as np
 import math
 
-PGF_modifier = 1.
-coriolis_modifier = 1.
+PGF_modifier = 0.0001
+coriolis_modifier = 100.
 
 def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev, w, wld_ref, apply_pgf=True, remove_pgf=True):
     """Calculates the advection, diffusion, coriolis effect and pressure gradient force affects on the wind velocity arrays over a single tick
@@ -29,9 +29,9 @@ def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_
     """
     #  Pressure Gradient Force: Remove old gradient
 
-    if remove_pgf:
-        u[0:N+2, 0:N+2] -= x_grad_u_prev[0:N+2, 0:N+2] * PGF_modifier * dt
-        v[0:N+2, 0:N+2] -= x_grad_v_prev[0:N+2, 0:N+2] * PGF_modifier * dt
+    #if remove_pgf:
+    #    u[0:N+2, 0:N+2] -= x_grad_u_prev[0:N+2, 0:N+2] * PGF_modifier * dt
+    #    v[0:N+2, 0:N+2] -= x_grad_v_prev[0:N+2, 0:N+2] * PGF_modifier * dt
 
     #  Pressure Gradient Force: Apply new gradient
 

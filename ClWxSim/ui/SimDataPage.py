@@ -16,8 +16,8 @@ LARGE_FONT= ("Verdana", 12)
 
 class SimDataPage(tk.Frame):
 
-    quiver_w_scale = 100.
-    quiver_c_scale = 100.
+    quiver_w_scale = 1000.
+    quiver_c_scale = 1000.
     quiver_g_scale = 100.
 
     def __init__(self, parent, controller):
@@ -79,7 +79,6 @@ class SimDataPage(tk.Frame):
 
         self.axar.xaxis.set_ticks([])
         self.axar.yaxis.set_ticks([])
-        #self.axar.set_aspect('equal')
 
         # Contour
         X, Y = np.mgrid[0:self.wld_ref.wld_grid_size + 2, 0:self.wld_ref.wld_grid_size + 2]
@@ -208,8 +207,8 @@ class SimDataPage(tk.Frame):
         data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
         data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
 
-        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_c_scale
-        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_c_scale
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_g_scale
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_g_scale
 
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
