@@ -11,7 +11,7 @@ class Controller:
 
     running = False
     tickNum = 0
-    begin_pgf_tick = 300
+    begin_pgf_tick = 20
 
     def __init__(self, world):
         """Instatiaties a Controller object

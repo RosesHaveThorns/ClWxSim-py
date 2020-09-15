@@ -16,9 +16,9 @@ LARGE_FONT= ("Verdana", 12)
 
 class SimDataPage(tk.Frame):
 
-    quiver_w_scale = 1000.
-    quiver_c_scale = 1000.
-    quiver_g_scale = 100.
+    quiver_w_scale = 1000000000.
+    quiver_c_scale = 10000000.
+    quiver_g_scale = 10000000.
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -96,52 +96,52 @@ class SimDataPage(tk.Frame):
         data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
         data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
 
-        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_vel_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_w_scale
-        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_vel_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_w_scale
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_vel_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_vel_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
 
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_w_scale
+                    data_u[i, j] = 0.0000000000000000000000000000001
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_w_scale
+                    data_v[i, j] = 0.0000000000000000000000000000001
 
-        self.graph_w_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), scale=5, scale_units='inches', alpha=0.5)
+        self.graph_w_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), alpha=0.5) #scale=.1, angles='xy', scale_units='xy',
 
         # Coriolis quiver (remove zero vals and scale down)
         data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
         data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
 
-        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.dbg_coriolis_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_c_scale
-        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.dbg_coriolis_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_c_scale
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.dbg_coriolis_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.dbg_coriolis_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
 
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_c_scale
+                    data_u[i, j] = 0.0000000000000000000000000000001
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_c_scale
+                    data_v[i, j] = 0.0000000000000000000000000000001
 
-        self.graph_c_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), color="c", scale=5, scale_units='inches', alpha=0.5)
+        self.graph_c_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), color="c", angles='xy', scale_units='xy', scale=.1, alpha=0.5)
 
         # PGF quiver (remove zero vals and scale down)
         data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
         data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
 
-        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_g_scale
-        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_g_scale
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
 
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_g_scale
+                    data_u[i, j] = 0.0000000000000000000000000000001
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_g_scale
+                    data_v[i, j] = 0.0000000000000000000000000000001
 
-        self.graph_g_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), color="r", scale=5, scale_units='inches', alpha=0.5)
+        self.graph_g_arrows = self.axar.quiver(X, Y, np.transpose(data_u), np.transpose(data_v), color="r", angles='xy', scale_units='xy', scale=.25, alpha=0.5)
 
 
 # Commands
@@ -163,16 +163,16 @@ class SimDataPage(tk.Frame):
         data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
         data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
 
-        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_vel_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_w_scale
-        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_vel_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_w_scale
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_vel_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_vel_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
 
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_w_scale
+                    data_u[i, j] = 0.0000000000000000000000000000001
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_w_scale
+                    data_v[i, j] = 0.0000000000000000000000000000001
 
         if self.show_wind.get():
             self.graph_w_arrows.set_visible(True)
@@ -185,16 +185,15 @@ class SimDataPage(tk.Frame):
         data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
         data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
 
-        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.dbg_coriolis_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_c_scale
-        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.dbg_coriolis_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_c_scale
-
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.dbg_coriolis_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.dbg_coriolis_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_c_scale
+                    data_u[i, j] = 0.0000000000000000000000000000001
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_c_scale
+                    data_v[i, j] = 0.0000000000000000000000000000001
 
         if self.show_coriolis.get():
             self.graph_c_arrows.set_visible(True)
@@ -207,16 +206,16 @@ class SimDataPage(tk.Frame):
         data_u = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
         data_v = np.zeros((self.wld_ref.grid_size, self.wld_ref.grid_size))
 
-        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_g_scale
-        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] * self.quiver_g_scale
+        data_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_u[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
+        data_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size] = self.wld_ref.air_pressure_grad_v[0:self.wld_ref.grid_size, 0:self.wld_ref.grid_size]
 
         for i in range(self.wld_ref.grid_size):
             for j in range(self.wld_ref.grid_size):
                 if data_u[i, j] == 0:
-                    data_u[i, j] = 0.0000000000000000000000000000001 * self.quiver_g_scale
+                    data_u[i, j] = 0.0000000000000000000000000000001
 
                 if data_v[i, j] == 0:
-                    data_v[i, j] = 0.0000000000000000000000000000001 * self.quiver_g_scale
+                    data_v[i, j] = 0.0000000000000000000000000000001
 
         if self.show_pgf.get():
             self.graph_g_arrows.set_visible(True)

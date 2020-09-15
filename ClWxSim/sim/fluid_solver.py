@@ -68,7 +68,7 @@ def lin_solve(N, b, x, x0, a, c):
         set_bnd(N, b, x)
 
 def diffuse(N, b, x, x0, diff, dt):
-    """Calculates the changes array x after diffusion
+    """Calculates the changes to array x after diffusion
 
     Args:
         N (int): Size of array excluding boundary cells

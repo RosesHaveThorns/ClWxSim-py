@@ -24,7 +24,7 @@ class World:
     """
 
     # -- Attributes --
-    dt = .5         # Length of time for each tick
+    dt = .1         # Length of time for each tick
 
     diff = 0.00001  # Pressure diffusion rate
     visc = 0.00001  # Wind diffusion rate

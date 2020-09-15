@@ -5,8 +5,8 @@ import ClWxSim.sim.fluid_solver as solver
 import numpy as np
 import math
 
-PGF_modifier = 0.0001
-coriolis_modifier = 100.
+PGF_modifier = 1.0
+coriolis_modifier = 1.0
 
 def tick(N, u, v, u0, v0, visc, dt, x_grad_u, x_grad_v, x_grad_u_prev, x_grad_v_prev, w, wld_ref, apply_pgf=True, remove_pgf=True):
     """Calculates the advection, diffusion, coriolis effect and pressure gradient force affects on the wind velocity arrays over a single tick

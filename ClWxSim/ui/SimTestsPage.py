@@ -95,11 +95,11 @@ class SimTestsPage(tk.Frame):
         self.p_data_label = tk.Label(cell_data_frame, text="Pressure: Null")
         self.p_data_label.grid(row=0, column=0)
 
-        self.u_data_label = tk.Label(cell_data_frame, text="Wind U: Null")
-        self.u_data_label.grid(row=0, column=1)
+        self.w_data_label = tk.Label(cell_data_frame, text="Wind: Null")
+        self.w_data_label.grid(row=0, column=1)
 
-        self.v_data_label = tk.Label(cell_data_frame, text="Wind V: Null")
-        self.v_data_label.grid(row=0, column=2)
+        self.c_data_label = tk.Label(cell_data_frame, text="Coriolis: Null")
+        self.c_data_label.grid(row=0, column=2)
 
                 # Create get cell data button
         get_data_btn = ttk.Button(cell_data_frame, text="View Cell Data", command=self.view_cell_data)
@@ -111,8 +111,8 @@ class SimTestsPage(tk.Frame):
         presets_frame = tk.Frame(self)
 
                 # Heading
-        self.p_data_label = tk.Label(presets_frame, text="Presets:")
-        self.p_data_label.grid(row=0, column=1)
+        label = tk.Label(presets_frame, text="Presets:")
+        label.grid(row=0, column=1)
 
                 # Preset Buttons
         preset_A_btn = ttk.Button(presets_frame, text="Add Preset A", command=self.preset_A)
@@ -167,9 +167,9 @@ class SimTestsPage(tk.Frame):
         x = int(self.cell_data_fields[1].get())
         y = int(self.cell_data_fields[0].get())
 
-        self.p_data_label.config(text=self.wld_ref.air_pressure[x, y])
-        self.u_data_label.config(text=self.wld_ref.air_vel_u[x, y])
-        self.v_data_label.config(text=self.wld_ref.air_vel_v[x, y])
+        self.p_data_label.config(text="Pressure: " + str(self.wld_ref.air_pressure[x, y]))
+        self.w_data_label.config(text="Wind: " + str(self.wld_ref.air_vel_u[x, y]) + ", " + str(self.wld_ref.air_vel_v[x, y]))
+        self.c_data_label.config(text="Coriolis: " + str(self.wld_ref.dbg_coriolis_u[x, y]) + ", " + str(self.wld_ref.dbg_coriolis_v[x, y]))
 
     def add_pressure_cmd(self):
         # Get entry vals
